@@ -12,7 +12,7 @@ WELCOME_PHOTO = "photo/photo_2026-02-26_23-05-28.jpg"
 router = Router()
 
 WELCOME_TEXT = (
-    "👋 <b>Привет, {name}!</b>\n\n"
+    "<b>Привет, {name}!</b>\n\n"
     "Добро пожаловать в приватный канал только для премиум подписчиков.\n\n"
     "Вас ждет:\n\n"
     "Эксклюзивный 18+ контент, общение, и исполнение сокровенных желаний.\n\n"
@@ -30,14 +30,12 @@ async def cmd_start(msg: Message):
     if pending:
         builder = InlineKeyboardBuilder()
         builder.row(InlineKeyboardButton(
-            text="✅  Я оплатил — проверить",
-            callback_data=f"check_payment:{pending['id']}",
-            style="success"
+            text="Я оплатил — проверить",
+            callback_data=f"check_payment:{pending['id']}"
         ))
         builder.row(InlineKeyboardButton(
-            text="❌  Отменить, выбрать другой тариф",
-            callback_data="back_main",
-            style="danger"
+            text="Отменить, выбрать другой тариф",
+            callback_data="back_main"
         ))
         plan_names = {"1m": "1 месяц", "3m": "3 месяца", "12m": "12 месяцев"}
         await msg.answer(
@@ -122,8 +120,8 @@ async def cb_join_channel(call: CallbackQuery):
         return
 
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text="🚀  Подать заявку в канал", url=invite_link, style="success"))
-    builder.row(InlineKeyboardButton(text="🏠  Главное меню", callback_data="back_main"))
+    builder.row(InlineKeyboardButton(text="Подать заявку в канал", url=invite_link))
+    builder.row(InlineKeyboardButton(text="Главное меню", callback_data="back_main"))
 
     await call.message.edit_text(
         "🎉 <b>Подписка активна!</b>\n\n"
