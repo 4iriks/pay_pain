@@ -97,11 +97,18 @@ async def cb_my_sub(call: CallbackQuery):
             "Оформите подписку, чтобы получить доступ к закрытому каналу 👇"
         )
 
-    await call.message.edit_text(
-        text,
-        parse_mode="HTML",
-        reply_markup=kb_subscription_info(has_active=bool(sub))
-    )
+    if call.message.photo:
+        await call.message.edit_caption(
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=kb_subscription_info(has_active=bool(sub))
+        )
+    else:
+        await call.message.edit_text(
+            text,
+            parse_mode="HTML",
+            reply_markup=kb_subscription_info(has_active=bool(sub))
+        )
     await call.answer()
 
 
