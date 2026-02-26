@@ -130,11 +130,13 @@ async def cb_join_channel(call: CallbackQuery):
     builder.row(InlineKeyboardButton(text="Подать заявку в канал", url=invite_link))
     builder.row(InlineKeyboardButton(text="Главное меню", callback_data="back_main"))
 
-    await call.message.edit_text(
+    join_text = (
         "🎉 <b>Подписка активна!</b>\n\n"
         "Нажмите кнопку ниже и подайте заявку на вступление.\n"
-        "Бот одобрит её автоматически в течение нескольких секунд.",
-        parse_mode="HTML",
-        reply_markup=builder.as_markup()
+        "Бот одобрит её автоматически в течение нескольких секунд."
     )
+    if call.message.photo:
+        await call.message.edit_caption(caption=join_text, parse_mode="HTML", reply_markup=builder.as_markup())
+    else:
+        await call.message.edit_text(join_text, parse_mode="HTML", reply_markup=builder.as_markup())
     await call.answer()
