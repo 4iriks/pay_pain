@@ -4,9 +4,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 def kb_main_menu() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text="1 месяц — 399 ₽",      callback_data="plan:1m"))
-    builder.row(InlineKeyboardButton(text="3 месяца — 699 ₽",      callback_data="plan:3m"))
-    builder.row(InlineKeyboardButton(text="12 месяцев — 2 199 ₽",  callback_data="plan:12m"))
+    builder.row(InlineKeyboardButton(text="1 месяц — 499 ₽",      callback_data="plan:1m"))
+    builder.row(InlineKeyboardButton(text="3 месяца — 799 ₽",      callback_data="plan:3m"))
+    builder.row(InlineKeyboardButton(text="12 месяцев — 2 299 ₽",  callback_data="plan:12m"))
     builder.row(InlineKeyboardButton(text="Моя подписка",           callback_data="my_sub"))
     return builder.as_markup()
 
@@ -19,21 +19,27 @@ def kb_payment(sub_id: int, payment_url: str) -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def kb_after_payment() -> InlineKeyboardMarkup:
+def kb_after_payment(invite_link: str = None) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.row(InlineKeyboardButton(text="Войти в канал",   callback_data="join_channel"))
-    builder.row(InlineKeyboardButton(text="Моя подписка",    callback_data="my_sub"))
+    if invite_link:
+        builder.row(InlineKeyboardButton(text="Войти в канал", url=invite_link))
+    else:
+        builder.row(InlineKeyboardButton(text="Войти в канал", callback_data="join_channel"))
+    builder.row(InlineKeyboardButton(text="Моя подписка", callback_data="my_sub"))
     return builder.as_markup()
 
 
-def kb_subscription_info(has_active: bool) -> InlineKeyboardMarkup:
+def kb_subscription_info(has_active: bool, invite_link: str = None) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     if has_active:
-        builder.row(InlineKeyboardButton(text="Войти в канал",      callback_data="join_channel"))
-        builder.row(InlineKeyboardButton(text="Продлить подписку",  callback_data="back_main"))
+        if invite_link:
+            builder.row(InlineKeyboardButton(text="Войти в канал", url=invite_link))
+        else:
+            builder.row(InlineKeyboardButton(text="Войти в канал", callback_data="join_channel"))
+        builder.row(InlineKeyboardButton(text="Продлить подписку", callback_data="back_main"))
     else:
-        builder.row(InlineKeyboardButton(text="Оформить подписку",  callback_data="back_main"))
-    builder.row(InlineKeyboardButton(text="Главное меню",           callback_data="back_main"))
+        builder.row(InlineKeyboardButton(text="Оформить подписку", callback_data="back_main"))
+    builder.row(InlineKeyboardButton(text="Главное меню", callback_data="back_main"))
     return builder.as_markup()
 
 

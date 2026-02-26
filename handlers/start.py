@@ -79,6 +79,7 @@ async def cb_back_main(call: CallbackQuery):
 @router.callback_query(F.data == "my_sub")
 async def cb_my_sub(call: CallbackQuery):
     sub = await get_active_subscription(call.from_user.id)
+    invite_link = await get_setting("invite_link") if sub else None
 
     if sub:
         expires = sub["expires_at"]
@@ -101,13 +102,13 @@ async def cb_my_sub(call: CallbackQuery):
         await call.message.edit_caption(
             caption=text,
             parse_mode="HTML",
-            reply_markup=kb_subscription_info(has_active=bool(sub))
+            reply_markup=kb_subscription_info(has_active=bool(sub), invite_link=invite_link)
         )
     else:
         await call.message.edit_text(
             text,
             parse_mode="HTML",
-            reply_markup=kb_subscription_info(has_active=bool(sub))
+            reply_markup=kb_subscription_info(has_active=bool(sub), invite_link=invite_link)
         )
     await call.answer()
 

@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery
 from config import PLANS
 from database import (
     create_subscription, activate_subscription,
-    get_pending_subscription
+    get_pending_subscription, get_setting
 )
 from services.yookassa import create_payment, check_payment
 from keyboards.main import kb_payment, kb_after_payment, kb_back_main
@@ -15,25 +15,25 @@ router = Router()
 PLAN_DESCRIPTIONS = {
     "1m": (
         "🥉 <b>Тариф: Старт — 1 месяц</b>\n\n"
-        "💰 Стоимость: <b>399 ₽</b>\n"
+        "💰 Стоимость: <b>499 ₽</b>\n"
         "📅 Срок: <b>30 дней</b>\n"
         "✅ Полный доступ к каналу\n\n"
         "Нажмите «Оплатить», чтобы продолжить 👇"
     ),
     "3m": (
         "🥈 <b>Тариф: Популярный — 3 месяца</b>\n\n"
-        "💰 Стоимость: <b>699 ₽</b>  <s>1 197 ₽</s>\n"
+        "💰 Стоимость: <b>799 ₽</b>  <s>1 497 ₽</s>\n"
         "📅 Срок: <b>90 дней</b>\n"
         "✅ Полный доступ к каналу\n"
-        "🎁 Экономия: <b>41%</b>\n\n"
+        "🎁 Экономия: <b>47%</b>\n\n"
         "Нажмите «Оплатить», чтобы продолжить 👇"
     ),
     "12m": (
         "🥇 <b>Тариф: Выгодный — 12 месяцев</b>\n\n"
-        "💰 Стоимость: <b>2 199 ₽</b>  <s>4 788 ₽</s>\n"
+        "💰 Стоимость: <b>2 299 ₽</b>  <s>5 988 ₽</s>\n"
         "📅 Срок: <b>365 дней</b>\n"
         "✅ Полный доступ к каналу\n"
-        "🎁 Экономия: <b>54%</b>\n\n"
+        "🎁 Экономия: <b>62%</b>\n\n"
         "Нажмите «Оплатить», чтобы продолжить 👇"
     ),
 }
@@ -112,6 +112,7 @@ async def cb_check_payment(call: CallbackQuery):
         await activate_subscription(sub_id, payment_id, expires_at)
 
         plan_names = {"1m": "1 месяц", "3m": "3 месяца", "12m": "12 месяцев"}
+        invite_link = await get_setting("invite_link")
         success_text = (
             f"🎉 <b>Оплата прошла успешно!</b>\n\n"
             f"✅ Подписка активирована\n"
@@ -120,9 +121,9 @@ async def cb_check_payment(call: CallbackQuery):
             f"Нажмите кнопку ниже, чтобы войти в канал 👇"
         )
         if call.message.photo:
-            await call.message.edit_caption(caption=success_text, parse_mode="HTML", reply_markup=kb_after_payment())
+            await call.message.edit_caption(caption=success_text, parse_mode="HTML", reply_markup=kb_after_payment(invite_link=invite_link))
         else:
-            await call.message.edit_text(success_text, parse_mode="HTML", reply_markup=kb_after_payment())
+            await call.message.edit_text(success_text, parse_mode="HTML", reply_markup=kb_after_payment(invite_link=invite_link))
     elif status == "cancelled":
         cancel_text = "❌ <b>Платёж отменён</b>\n\nПопробуйте снова или выберите другой способ оплаты."
         if call.message.photo:
