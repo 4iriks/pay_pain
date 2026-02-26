@@ -71,11 +71,10 @@ async def cb_plan_selected(call: CallbackQuery):
         await db.commit()
 
     desc = PLAN_DESCRIPTIONS.get(plan_key, "")
-    await call.message.edit_text(
-        desc,
-        parse_mode="HTML",
-        reply_markup=kb_payment(sub_id=sub_id, payment_url=result.confirmation_url)
-    )
+    if call.message.photo:
+        await call.message.edit_caption(caption=desc, parse_mode="HTML", reply_markup=kb_payment(sub_id=sub_id, payment_url=result.confirmation_url))
+    else:
+        await call.message.edit_text(desc, parse_mode="HTML", reply_markup=kb_payment(sub_id=sub_id, payment_url=result.confirmation_url))
     await call.answer()
 
 
@@ -113,21 +112,22 @@ async def cb_check_payment(call: CallbackQuery):
         await activate_subscription(sub_id, payment_id, expires_at)
 
         plan_names = {"1m": "1 месяц", "3m": "3 месяца", "12m": "12 месяцев"}
-        await call.message.edit_text(
+        success_text = (
             f"🎉 <b>Оплата прошла успешно!</b>\n\n"
             f"✅ Подписка активирована\n"
             f"📦 Тариф: <b>{plan_names.get(sub['plan_key'], sub['plan_key'])}</b>\n"
             f"⏳ Действует до: <b>{expires_at[:10]}</b>\n\n"
-            f"Нажмите кнопку ниже, чтобы войти в канал 👇",
-            parse_mode="HTML",
-            reply_markup=kb_after_payment()
+            f"Нажмите кнопку ниже, чтобы войти в канал 👇"
         )
+        if call.message.photo:
+            await call.message.edit_caption(caption=success_text, parse_mode="HTML", reply_markup=kb_after_payment())
+        else:
+            await call.message.edit_text(success_text, parse_mode="HTML", reply_markup=kb_after_payment())
     elif status == "cancelled":
-        await call.message.edit_text(
-            "❌ <b>Платёж отменён</b>\n\n"
-            "Попробуйте снова или выберите другой способ оплаты.",
-            parse_mode="HTML",
-            reply_markup=kb_back_main()
-        )
+        cancel_text = "❌ <b>Платёж отменён</b>\n\nПопробуйте снова или выберите другой способ оплаты."
+        if call.message.photo:
+            await call.message.edit_caption(caption=cancel_text, parse_mode="HTML", reply_markup=kb_back_main())
+        else:
+            await call.message.edit_text(cancel_text, parse_mode="HTML", reply_markup=kb_back_main())
     else:
         await call.answer("❌ Оплата не найдена", show_alert=True)
